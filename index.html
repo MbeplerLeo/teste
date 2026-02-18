@@ -36,18 +36,21 @@
 
         // Função para mapear coordenadas da tela para o mundo VR
         function onResults(results) {
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                // Pegamos o ponto médio da mão (Landmark 9)
-                const hand = results.multiHandLandmarks[0][9];
-                
-                // Conversão simples de coordenadas (0 a 1) para o espaço 3D do A-Frame
-                // Ajustamos o eixo X e Y, e colocamos o Z fixo à frente da câmera
-               const x = (0.5 - hand.x) * 2; // Invertido para agir como espelho
-                const y = (hand.y - 0.5) * -2 + 1.6; // Ajuste de altura padrão VR
-                const z = -1; // Distância à frente da câmera
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const hand = results.multiHandLandmarks[0][9];
+        
+        // Ajuste para câmera traseira (sem inverter o X negativamente)
+        // Multiplicamos por 3 ou 4 para dar mais amplitude ao movimento no VR
+        const x = (hand.x - 0.5) * 3; 
+        
+        // Invertemos a lógica do Y (0.5 - hand.y) para que subir a mão suba a esfera
+        const y = (0.5 - hand.y) * 3 + 1.6; 
+        
+        const z = -2; // Um pouco mais longe para facilitar a visão no Cardboard
 
-                handEntity.setAttribute('position', `${x} ${y} ${z}`);
-            }
+        handEntity.setAttribute('position', `${x} ${y} ${z}`);
+    }
+
         }
 
         const hands = new Hands({
@@ -78,3 +81,4 @@
 </body>
 
 </html>
+

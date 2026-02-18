@@ -37,19 +37,21 @@
         // Função para mapear coordenadas da tela para o mundo VR
         function onResults(results) {
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        // Landmark 9 é o meio da palma
         const hand = results.multiHandLandmarks[0][9];
-        
-        // Ajuste para câmera traseira (sem inverter o X negativamente)
-        // Multiplicamos por 3 ou 4 para dar mais amplitude ao movimento no VR
-        const x = (hand.x - 0.5) * 3; 
-        
-        // Invertemos a lógica do Y (0.5 - hand.y) para que subir a mão suba a esfera
-        const y = (0.5 - hand.y) * 3 + 1.6; 
-        
-        const z = -2; // Um pouco mais longe para facilitar a visão no Cardboard
+
+        // TENTE ESTA LINHA (Inverte o X multiplicando por -1 explicitamente)
+        // O valor 3 é para dar amplitude ao movimento
+        const x = (0.5 - hand.x) * 3; 
+
+        // Ajuste do Y (Invertido para cima ser positivo no VR)
+        const y = (0.5 - hand.y) * 2 + 1.6;
+
+        const z = -2; // Distância fixa à frente
 
         handEntity.setAttribute('position', `${x} ${y} ${z}`);
     }
+
 
         }
 
@@ -81,4 +83,5 @@
 </body>
 
 </html>
+
 

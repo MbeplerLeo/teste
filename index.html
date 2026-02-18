@@ -42,7 +42,7 @@
                 
                 // Conversão simples de coordenadas (0 a 1) para o espaço 3D do A-Frame
                 // Ajustamos o eixo X e Y, e colocamos o Z fixo à frente da câmera
-                const x = (hand.x - 0.5) * -2; // Invertido para agir como espelho
+               const x = (0.5 - hand.x) * 2; // Invertido para agir como espelho
                 const y = (hand.y - 0.5) * -2 + 1.6; // Ajuste de altura padrão VR
                 const z = -1; // Distância à frente da câmera
 
@@ -76,4 +76,5 @@
         camera.start();
     </script>
 </body>
+
 </html>

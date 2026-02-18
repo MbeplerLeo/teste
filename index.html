@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>VR Hand Tracking - Cardboard</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #video-canvas { display: none; } /* Esconde o feed bruto da câmera */
+    </style>
+</head>
+<body>
+
+    <a-scene vr-mode-ui="enabled: true">
+        <a-sky color="#222"></a-sky>
+        <a-light type="ambient" color="#444"></a-light>
+        <a-light type="directional" intensity="0.5" position="-1 1 2"></a-light>
+
+        <a-entity id="hand-pointer">
+            <a-sphere radius="0.05" color="#EF2D5E"></a-sphere>
+            <a-text value="MAO" align="center" position="0 0.1 0" scale="0.2 0.2 0.2"></a-text>
+        </a-entity>
+
+        <a-grid position="0 0 0" rotation="-90 0 0" width="10" height="10" static-body></a-grid>
+
+        <a-camera position="0 1.6 0"></a-camera>
+    </a-scene>
+
+    <video id="input-video" style="display:none"></video>
+
+    <script>
+        const videoElement = document.getElementById('input-video');
+        const handEntity = document.getElementById('hand-pointer');
+
+        // Função para mapear coordenadas da tela para o mundo VR
+        function onResults(results) {
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                // Pegamos o ponto médio da mão (Landmark 9)
+                const hand = results.multiHandLandmarks[0][9];
+                
+                // Conversão simples de coordenadas (0 a 1) para o espaço 3D do A-Frame
+                // Ajustamos o eixo X e Y, e colocamos o Z fixo à frente da câmera
+                const x = (hand.x - 0.5) * -2; // Invertido para agir como espelho
+                const y = (hand.y - 0.5) * -2 + 1.6; // Ajuste de altura padrão VR
+                const z = -1; // Distância à frente da câmera
+
+                handEntity.setAttribute('position', `${x} ${y} ${z}`);
+            }
+        }
+
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults(onResults);
+
+        // Configuração da Câmera Traseira
+        const camera = new Camera(videoElement, {
+            onFrame: async () => {
+                await hands.send({image: videoElement});
+            },
+            width: 640,
+            height: 480,
+            facingMode: 'environment' // Força a câmera traseira
+        });
+        
+        camera.start();
+    </script>
+</body>
+</html>

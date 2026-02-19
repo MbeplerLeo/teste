@@ -47,7 +47,7 @@
         // Ajuste do Y (Invertido para cima ser positivo no VR)
         const y = (0.5 - hand.y) * 2 + 1.6;
 
-        const z = 0; // Distância fixa à frente
+        const z = -1; // Distância fixa à frente
 
         handEntity.setAttribute('position', `${x} ${y} ${z}`);
     }
@@ -83,6 +83,7 @@
 </body>
 
 </html>
+
 
 
 
